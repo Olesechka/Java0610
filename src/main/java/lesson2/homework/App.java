@@ -9,7 +9,7 @@ public class App {
                 {"9", "10", "11", "12"},
                 {"13", "14", "15", "16"}
         };
-        checkArr(arr);
+        summArr(arr);
     }
 
     public static void checkArr(String[][] arr) throws Exception {
@@ -19,11 +19,11 @@ public class App {
                 throw new MyArraySizeException();
             }
         }
-        summArr(arr);
     }
 
-    public static void summArr(String[][] arr) throws MyArrayDataException {
+    public static void summArr(String[][] arr) throws Exception {
         int sum = 0;
+        checkArr(arr);
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 try {
