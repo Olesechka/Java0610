@@ -1,15 +1,19 @@
 package lesson6;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.ScrollPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.DataInputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
-import java.util.Locale;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 public class EchoClient extends JFrame {
 
@@ -23,11 +27,10 @@ public class EchoClient extends JFrame {
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
 
-
     public EchoClient() {
         try {
             openConnection();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         prepareUI();
@@ -37,7 +40,6 @@ public class EchoClient extends JFrame {
         socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
         dataInputStream = new DataInputStream(socket.getInputStream());
         dataOutputStream = new DataOutputStream(socket.getOutputStream());
-
         new Thread(() -> {
             try {
                 while (true) {
@@ -51,27 +53,29 @@ public class EchoClient extends JFrame {
                 textArea.append("Соединение разорвано");
                 textField.setEnabled(false);
                 closeConnection();
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }).start();
+
     }
+
 
     private void closeConnection() {
         try {
             dataOutputStream.close();
         } catch (Exception ex) {
-            ex.printStackTrace();
+
         }
         try {
             dataInputStream.close();
         } catch (Exception ex) {
-            ex.printStackTrace();
+
         }
         try {
             socket.close();
         } catch (Exception ex) {
-            ex.printStackTrace();
+
         }
     }
 
@@ -83,7 +87,7 @@ public class EchoClient extends JFrame {
             dataOutputStream.writeUTF(textField.getText());
             textField.setText("");
             textField.grabFocus();
-        } catch (Exception ex) {
+        }catch (Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -98,13 +102,14 @@ public class EchoClient extends JFrame {
         textArea.setLineWrap(true);
         add(new JScrollPane(textArea), BorderLayout.CENTER);
 
-        JPanel jPanel = new JPanel();
-        JButton button = new JButton("Send");
-        jPanel.add(button, BorderLayout.EAST);
-        textField = new JTextField();
-        add(textField, BorderLayout.CENTER);
 
-        add(jPanel, BorderLayout.SOUTH);
+        JPanel panel = new JPanel(new BorderLayout());
+        JButton button = new JButton("Send");
+        panel.add(button, BorderLayout.EAST);
+        textField = new JTextField();
+        panel.add(textField, BorderLayout.CENTER);
+
+        add(panel, BorderLayout.SOUTH);
 
         button.addActionListener(new ActionListener() {
             @Override
@@ -118,7 +123,6 @@ public class EchoClient extends JFrame {
                 sendMessage();
             }
         });
-
 
         setVisible(true);
     }
