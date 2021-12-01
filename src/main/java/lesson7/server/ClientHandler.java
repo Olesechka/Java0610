@@ -23,14 +23,14 @@ public class ClientHandler {
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
             new Thread(() ->{
-                try{
-                    authentification();
-                    readMessage();
-                }catch (IOException ex){
-                    ex.printStackTrace();
-                }finally {
-                    closeConnection();
-                }
+//                try{
+//                    authentification();
+//                    readMessage();
+//                }catch (IOException ex){
+//                    ex.printStackTrace();
+//                }finally {
+//                    closeConnection();
+//                }
             }).start();
 
         } catch (IOException ex) {
