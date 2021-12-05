@@ -13,4 +13,10 @@ public class Constants {
      * Команда конца связи
      */
     public static String END_COMMAND = "/end";
+
+    public static final String AUTH_COMMAND = "/auth";
+
+    public static final String AUTH_OK_COMMAND = "/authok";
+
+
 }

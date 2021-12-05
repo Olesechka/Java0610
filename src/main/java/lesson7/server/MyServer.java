@@ -9,6 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MyServer {
+
+    public AuthService getAuthService() {
+        return authService;
+    }
+
     /**
      * Сервис аутентификации
      */
@@ -18,6 +23,8 @@ public class MyServer {
      * Активные клиенты
      */
     private List<ClientHandler> clients;
+
+
 
     public MyServer(){
         try(ServerSocket server = new ServerSocket(Constants.SERVER_PORT)){
@@ -43,5 +50,20 @@ public class MyServer {
         }
     }
 
+    public synchronized void broadcastMessage(String message){
+        clients.forEach(client -> client.sendMessage(message));
+
+//        for(ClientHandler client: clients){
+//            client.sendMessage(message);
+//        }
+    }
+
+    public synchronized void subscribe(ClientHandler client){
+        clients.add(client);
+    }
+
+    public synchronized void unsubscribe(ClientHandler client){
+        clients.remove(client);
+    }
 
 }
