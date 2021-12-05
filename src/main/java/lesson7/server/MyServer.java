@@ -25,32 +25,50 @@ public class MyServer {
     private List<ClientHandler> clients;
 
 
-
-    public MyServer(){
-        try(ServerSocket server = new ServerSocket(Constants.SERVER_PORT)){
-            authService =  new BaseAuthService();
+    public MyServer() {
+        try (ServerSocket server = new ServerSocket(Constants.SERVER_PORT)) {
+            authService = new BaseAuthService();
             authService.start();
 
             clients = new ArrayList<>();
 
-            while (true){
+            while (true) {
                 System.out.println("Сервер ожидает подключения");
                 Socket socket = server.accept();
                 System.out.println("Клиент подключился");
                 new ClientHandler(this, socket);
             }
 
-        }catch (IOException ex){
+        } catch (IOException ex) {
             System.out.println("Ошибка в работе сервера");
             ex.printStackTrace();
         } finally {
-            if (authService != null){
+            if (authService != null) {
                 authService.stop();
             }
         }
     }
 
-    public synchronized void broadcastMessage(String message){
+    public synchronized boolean isNickBusy(String nick) {
+        for (ClientHandler clientHandler : clients) {
+            if (clientHandler.getName().equals(nick)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void privateMessage(ClientHandler nickFromMessage, String nickToMessage, String message) {
+        for (ClientHandler client : clients) {
+            if (client.getName().equals(nickToMessage)) {
+                client.sendMessage("Message from: " + nickFromMessage.getName() + " - " + message);
+                break;
+            }
+            nickFromMessage.sendMessage("Message to: " + nickToMessage + " - " + message);
+        }
+    }
+
+    public synchronized void broadcastMessage(String message) {
         clients.forEach(client -> client.sendMessage(message));
 
 //        for(ClientHandler client: clients){
@@ -58,11 +76,11 @@ public class MyServer {
 //        }
     }
 
-    public synchronized void subscribe(ClientHandler client){
+    public synchronized void subscribe(ClientHandler client) {
         clients.add(client);
     }
 
-    public synchronized void unsubscribe(ClientHandler client){
+    public synchronized void unsubscribe(ClientHandler client) {
         clients.remove(client);
     }
 

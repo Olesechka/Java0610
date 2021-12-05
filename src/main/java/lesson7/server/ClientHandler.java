@@ -19,6 +19,10 @@ public class ClientHandler {
     private DataOutputStream out;
     private String name;
 
+    public String getName() {
+        return name;
+    }
+
 
     public ClientHandler(MyServer server, Socket socket) {
         try {
@@ -51,15 +55,14 @@ public class ClientHandler {
                 String nick = server.getAuthService().getNickByLoginAndPass(tokens[1], tokens[2]);
 
                 if (nick != null) {
-                    name = nick;
-                    //Дописать проверку что такого ника нет в чате(*)
-
-                    //Авторизовались
-                    sendMessage(Constants.AUTH_OK_COMMAND + " " + nick);
-                    server.broadcastMessage(nick + " вошел в чат");
-                    server.subscribe(this);
-                    return;
-
+                    if (!server.isNickBusy(nick)) {
+                        name = nick;
+                        //Авторизовались
+                        sendMessage(Constants.AUTH_OK_COMMAND + " " + nick);
+                        server.broadcastMessage(nick + " вошел в чат");
+                        server.subscribe(this);
+                        return;
+                    }
                 } else {
                     sendMessage("Неверные логин/пароль");
                 }
@@ -80,12 +83,20 @@ public class ClientHandler {
         while (true) {
             String messageFromClient = in.readUTF();
             //hint: здесь можем получать команду
+            if (messageFromClient.startsWith((Constants.PRIVATE_MESSAGE))) {
+                String[] parts = messageFromClient.split("\\s");
+                String nickToMessage = parts[1];
+                String message = parts[2];
+                server.privateMessage(this, nickToMessage, message);
+                System.out.println("Сообщение только для " + nickToMessage + ": " + message);
+            } else {
+                System.out.println("Сообщение от " + name + ": " + messageFromClient);
+                server.broadcastMessage(name + ": " + messageFromClient);
+            }
 
-            System.out.println("Сообщение от " + name + ": " + messageFromClient);
             if (messageFromClient.equals(Constants.END_COMMAND)) {
                 break;
             }
-            server.broadcastMessage(name + ": " + messageFromClient);
         }
     }
 

@@ -13,9 +13,6 @@ import java.net.Socket;
 
 public class EchoClient extends JFrame {
 
-    private final String SERVER_ADDRESS = "localhost";
-    private final int SERVER_PORT = 8089;
-
     private JTextField textField;
     private JTextArea textArea;
 
@@ -90,7 +87,7 @@ public class EchoClient extends JFrame {
 
     private void prepareUI() {
         setBounds(200, 200, 500, 500);
-        setTitle("EchoClient");
+        setTitle("Client");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         textArea = new JTextArea();
@@ -100,16 +97,15 @@ public class EchoClient extends JFrame {
 
 
         JPanel panel = new JPanel(new BorderLayout());
-        JButton button = new JButton("Send");
+        JButton button = new JButton("Отправить");
         panel.add(button, BorderLayout.EAST);
         textField = new JTextField();
         panel.add(textField, BorderLayout.CENTER);
         add(panel, BorderLayout.SOUTH);
 
 
-        JPanel loginPanel = new JPanel((new BorderLayout()));
+        JPanel loginPanel = new JPanel((new GridLayout(1, 3)));
         JTextField loginField = new JTextField();
-        loginField.setBounds(100,10,150,10);
         loginPanel.add(loginField, BorderLayout.WEST);
         JTextField passField = new JTextField();
         loginPanel.add(passField, BorderLayout.CENTER);
